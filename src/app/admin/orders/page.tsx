@@ -180,7 +180,7 @@ export default function AdminOrdersPage() {
                   </td>
                 </tr>
               ) : (
-                filteredOrders.map((order) => (
+                filteredOrders.map((order: Order) => (
                   <tr key={order.id}>
                     <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {order.id}
