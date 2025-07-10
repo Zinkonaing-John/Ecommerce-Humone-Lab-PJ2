@@ -78,11 +78,11 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 min-h-screen">
-      <h1 className="text-4xl font-extrabold text-center text-black mb-12">
+    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-12 min-h-screen">
+      <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-black mb-8 sm:mb-12">
         Edit Product
       </h1>
-      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+      <div className="max-w-xl sm:max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-4 sm:p-8">
         <ProductForm
           initialData={product}
           onSubmit={handleEditProduct}

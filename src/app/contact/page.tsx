@@ -10,6 +10,7 @@ export default function ContactPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -21,10 +22,32 @@ export default function ContactPage() {
     }));
   };
 
+  const validateEmail = (email: string) => {
+    // Simple email regex
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validateName = (name: string) => {
+    // Only letters and spaces
+    return /^[A-Za-z\s]+$/.test(name);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setSubmitting(true);
     setMessageSent(false);
+
+    if (!validateName(formData.name)) {
+      setError("Name must contain only letters and spaces.");
+      setSubmitting(false);
+      return;
+    }
+    if (!validateEmail(formData.email)) {
+      setError("Please enter a valid email address.");
+      setSubmitting(false);
+      return;
+    }
 
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -71,6 +94,8 @@ export default function ContactPage() {
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  pattern="[A-Za-z\s]+"
+                  placeholder="e.g., John Doe"
                 />
               </div>
               <div>
@@ -88,6 +113,8 @@ export default function ContactPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+                  placeholder="e.g., john@example.com"
                 />
               </div>
               <div>
@@ -105,8 +132,12 @@ export default function ContactPage() {
                   value={formData.message}
                   onChange={handleChange}
                   required
+                  placeholder="e.g., I have a question about my order..."
                 ></textarea>
               </div>
+              {error && (
+                <p className="text-red-500 text-sm text-center">{error}</p>
+              )}
               <button
                 type="submit"
                 disabled={submitting}

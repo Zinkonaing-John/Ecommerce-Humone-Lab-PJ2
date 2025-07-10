@@ -91,29 +91,29 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 min-h-screen flex items-center justify-center">
-      <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
-        <h1 className="text-3xl font-bold text-center text-black mb-8">
+    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-12 min-h-screen flex items-center justify-center">
+      <div className="bg-white rounded-xl shadow-lg p-3 sm:p-8 max-w-xs sm:max-w-md w-full">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center text-black mb-6 sm:mb-8">
           Payment Details
         </h1>
 
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-black mb-3">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-black mb-2 sm:mb-3">
             Order Summary
           </h2>
-          <div className="flex justify-between text-lg text-black mb-2">
+          <div className="flex justify-between text-base sm:text-lg text-black mb-1 sm:mb-2">
             <span>Items:</span>
             <span>
               {cart.reduce((total, item) => total + item.quantity, 0)}
             </span>
           </div>
-          <div className="flex justify-between text-xl font-bold text-black border-t border-gray-300 pt-4">
+          <div className="flex justify-between text-lg sm:text-xl font-bold text-black border-t border-gray-300 pt-2 sm:pt-4">
             <span>Total:</span>
             <span>${calculateTotal().toFixed(2)}</span>
           </div>
         </div>
 
-        <form onSubmit={handlePayment} className="space-y-6">
+        <form onSubmit={handlePayment} className="space-y-4 sm:space-y-6">
           <div>
             <label
               htmlFor="cardNumber"
@@ -124,13 +124,18 @@ export default function PaymentPage() {
             <input
               type="text"
               id="cardNumber"
+              inputMode="numeric"
+              pattern="[0-9]*"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
               placeholder="XXXX XXXX XXXX XXXX"
               required
+              onChange={(e) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              }}
             />
           </div>
-          <div className="flex space-x-4">
-            <div className="w-1/2">
+          <div className="flex flex-col sm:flex-row sm:space-x-4 gap-3 sm:gap-0">
+            <div className="w-full sm:w-1/2">
               <label
                 htmlFor="expiryDate"
                 className="block text-black text-sm font-bold mb-2"
@@ -140,12 +145,17 @@ export default function PaymentPage() {
               <input
                 type="text"
                 id="expiryDate"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="MM/YY"
+                placeholder="MMYY"
                 required
+                onChange={(e) => {
+                  e.target.value = e.target.value.replace(/\D/g, "");
+                }}
               />
             </div>
-            <div className="w-1/2">
+            <div className="w-full sm:w-1/2">
               <label
                 htmlFor="cvv"
                 className="block text-black text-sm font-bold mb-2"
@@ -155,16 +165,21 @@ export default function PaymentPage() {
               <input
                 type="text"
                 id="cvv"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="XXX"
                 required
+                onChange={(e) => {
+                  e.target.value = e.target.value.replace(/\D/g, "");
+                }}
               />
             </div>
           </div>
           <button
             type="submit"
             disabled={loading || cart.length === 0}
-            className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg text-xl transition-colors duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-lg text-lg sm:text-xl transition-colors duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Processing Payment..." : "Pay Now"}
           </button>

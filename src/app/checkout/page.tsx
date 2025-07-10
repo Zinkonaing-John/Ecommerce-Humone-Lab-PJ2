@@ -41,38 +41,43 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      <h1 className="text-4xl font-extrabold text-center text-black mb-12">
+    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-8 min-h-screen">
+      <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-black mb-8 sm:mb-12">
         Checkout
       </h1>
 
-      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-black mb-6">Order Summary</h2>
-        <div className="space-y-4 mb-8">
+      <div className="max-w-2xl sm:max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-3 sm:p-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-black mb-4 sm:mb-6">
+          Order Summary
+        </h2>
+        <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
           {cart.map((item) => (
             <div
               key={item.id}
-              className="flex justify-between items-center border-b pb-2 last:border-b-0 last:pb-0"
+              className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-2 last:border-b-0 last:pb-0"
             >
-              <span className="text-black">
+              <span className="text-black text-base sm:text-lg">
                 {item.name} (x{item.quantity})
               </span>
-              <span className="font-semibold text-black">
+              <span className="font-semibold text-black text-base sm:text-lg">
                 ${(item.price * item.quantity).toFixed(2)}
               </span>
             </div>
           ))}
         </div>
 
-        <div className="flex justify-between text-xl font-bold text-black border-t border-gray-300 pt-4 mb-8">
+        <div className="flex justify-between text-lg sm:text-xl font-bold text-black border-t border-gray-300 pt-3 sm:pt-4 mb-6 sm:mb-8">
           <span>Total:</span>
           <span>${calculateTotal().toFixed(2)}</span>
         </div>
 
-        <h2 className="text-2xl font-bold text-black mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-black mb-4 sm:mb-6">
           Shipping Information
         </h2>
-        <form onSubmit={handleProceedToPayment} className="space-y-4 mb-8">
+        <form
+          onSubmit={handleProceedToPayment}
+          className="space-y-3 sm:space-y-4 mb-6 sm:mb-8"
+        >
           <div>
             <label
               htmlFor="fullName"
@@ -128,15 +133,22 @@ export default function CheckoutPage() {
             <input
               type="text"
               id="zip"
+              inputMode="numeric"
+              pattern="[0-9]*"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
               placeholder="12345"
               required
+              onChange={(e) => {
+                // Only allow digits
+                const value = e.target.value.replace(/\D/g, "");
+                e.target.value = value;
+              }}
             />
           </div>
           <button
             type="submit"
             disabled={loading || cart.length === 0}
-            className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg text-xl transition-colors duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-lg text-lg sm:text-xl transition-colors duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Proceeding..." : "Proceed to Payment"}
           </button>
