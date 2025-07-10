@@ -4,13 +4,11 @@ import { useCart } from "@/lib/CartContext";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/db";
-import { User } from "@supabase/supabase-js";
 
 export default function CheckoutPage() {
   const { cart } = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -19,8 +17,6 @@ export default function CheckoutPage() {
       } = await supabase.auth.getUser();
       if (!user) {
         router.push("/login"); // Redirect to login if not authenticated
-      } else {
-        setUser(user);
       }
     };
     getUser();

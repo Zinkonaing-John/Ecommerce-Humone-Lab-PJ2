@@ -5,10 +5,11 @@ import { useCart } from "@/lib/CartContext";
 import { supabase } from "@/lib/db";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { User } from "@supabase/supabase-js";
 
 export default function HeaderContent() {
   const { cart } = useCart();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
