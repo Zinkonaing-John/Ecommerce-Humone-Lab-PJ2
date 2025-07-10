@@ -41,8 +41,12 @@ export default function AdminUsersPage() {
         // result.users for paginated, result for full
         const users = result.users || result;
         setUsers(users);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred.");
+        }
         setUsers([]);
       }
       setLoading(false);
@@ -63,7 +67,6 @@ export default function AdminUsersPage() {
       phoneStr.toLowerCase().includes(search.toLowerCase());
     const matchesRole = true; // No direct role filtering in Auth users
     // For status, since Auth users don't have a direct status, treat users with last_sign_in_at as Active, otherwise Inactive
-    const userStatus = user.last_sign_in_at ? "Active" : "Inactive";
     const matchesStatus = true; // No direct status filtering in Auth users
     return matchesSearch && matchesRole && matchesStatus;
   });

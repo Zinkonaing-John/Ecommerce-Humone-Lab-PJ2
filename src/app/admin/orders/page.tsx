@@ -47,10 +47,9 @@ export default function AdminOrdersPage() {
     const fetchOrders = async () => {
       setLoading(true);
       setError(null);
-      let query = supabase
+      const { data, error } = await supabase
         .from("orders")
         .select("id, user_id, total_amount, items, created_at, status");
-      const { data, error } = await query;
       if (error) {
         setError("Failed to fetch orders.");
         setOrders([]);
@@ -72,7 +71,7 @@ export default function AdminOrdersPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     setDeleting(true);
     await supabase.from("orders").delete().eq("id", id);
     setOrders((prev) => prev.filter((o) => o.id !== id));
@@ -248,7 +247,7 @@ export default function AdminOrdersPage() {
                       </button>
                       <button
                         className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors text-xs sm:text-sm font-semibold"
-                        onClick={() => setDeleteOrderId(order.id)}
+                        onClick={() => setDeleteOrderId(order.id.toString())}
                       >
                         Delete
                       </button>
@@ -384,7 +383,7 @@ export default function AdminOrdersPage() {
               </button>
               <button
                 className="bg-red-600 text-white px-4 py-2 rounded"
-                onClick={() => handleDelete(deleteOrderId!)}
+                onClick={() => handleDelete(Number(deleteOrderId!))}
                 disabled={deleting}
               >
                 {deleting ? "Deleting..." : "Delete"}

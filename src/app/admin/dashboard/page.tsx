@@ -17,12 +17,6 @@ import {
 } from "recharts";
 import { addMonths, format } from "date-fns";
 
-interface OrderEvent {
-  order_id: number;
-  event_type: string;
-  event_message: string;
-  created_at: string;
-}
 interface MonthCount {
   month: string;
   count: number;
@@ -42,7 +36,6 @@ interface OrderStatus {
 }
 
 export default function AdminDashboardPage() {
-  const [orderEvents, setOrderEvents] = useState<OrderEvent[]>([]);
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalUsers: 0,
@@ -183,12 +176,6 @@ export default function AdminDashboardPage() {
         totalRevenue,
       });
       // Fetch recent order events
-      const { data: events } = await supabase
-        .from("order_events")
-        .select("order_id, event_type, event_message, created_at")
-        .order("created_at", { ascending: false })
-        .limit(10);
-      if (events) setOrderEvents(events);
     };
     fetchStatsAndEvents();
   }, [dateRange, categoryFilter]);
