@@ -5,6 +5,7 @@ import { IProduct } from "@/models/Product";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import "./globals.css";
+import Image from "next/image";
 
 async function getFeaturedProducts(): Promise<IProduct[]> {
   const { data: products, error } = await supabase
@@ -71,10 +72,12 @@ export default function Home() {
                   className="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"
                 >
                   <Link href={`/products/${product.id}`}>
-                    <img
+                    <Image
                       src={product.image}
                       alt={product.name}
                       className="w-full h-64 object-cover"
+                      width={400}
+                      height={256}
                     />
                     <div className="p-6">
                       <h3 className="text-xl font-semibold mb-2">
@@ -96,10 +99,12 @@ export default function Home() {
       <section className="bg-white py-20 px-4">
         <div className="container mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2">
-            <img
+            <Image
               src="/images/about-opulent.jpg"
               alt="About Opulent"
               className="rounded-lg shadow-lg w-full"
+              width={600}
+              height={400}
             />
           </div>
           <div className="md:w-1/2 text-center md:text-left">

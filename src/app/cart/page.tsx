@@ -2,6 +2,7 @@
 
 import { useCart } from "@/lib/CartContext";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity } = useCart();
@@ -34,10 +35,12 @@ export default function CartPage() {
                 className="flex flex-col sm:flex-row items-center border-b border-gray-200 py-4 last:border-b-0"
               >
                 <div className="w-24 h-24 flex-shrink-0 mb-3 sm:mb-0 sm:mr-4">
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.name}
                     className="w-full h-full object-cover rounded-md"
+                    width={96}
+                    height={96}
                   />
                 </div>
                 <div className="flex-grow w-full">

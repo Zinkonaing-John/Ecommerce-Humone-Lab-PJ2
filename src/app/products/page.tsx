@@ -4,6 +4,7 @@ import { supabase } from "@/lib/db";
 import { IProduct } from "@/models/Product";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 async function getProducts(): Promise<IProduct[]> {
   const { data: products, error } = await supabase.from("products").select("*");
@@ -117,10 +118,12 @@ export default function ProductsPage() {
             >
               <Link href={`/products/${product.id}`}>
                 <div className="relative w-full h-48 sm:h-60">
-                  <img
+                  <Image
                     src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover object-center"
+                    width={400}
+                    height={240}
                   />
                 </div>
                 <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/db";
+import Image from "next/image";
 
 const statusOptions = [
   { value: "pending", label: "Pending" },
@@ -302,10 +303,12 @@ export default function AdminOrdersPage() {
                       <li key={idx} className="border rounded p-2 bg-gray-50">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
                           {item.image && (
-                            <img
+                            <Image
                               src={item.image}
                               alt={item.name}
                               className="h-12 w-12 object-cover rounded-md mb-2 sm:mb-0"
+                              width={48}
+                              height={48}
                             />
                           )}
                           <div>

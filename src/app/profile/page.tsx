@@ -50,9 +50,7 @@ export default function ProfilePage() {
           .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
-        if (error) {
-          console.error("Error fetching orders:", error);
-        } else {
+        if (!error) {
           setOrders(fetchedOrders as Order[]);
         }
         setLoading(false);

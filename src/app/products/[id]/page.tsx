@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { useCart } from "@/lib/CartContext";
 import { useEffect, useState, use } from "react";
 import { User } from "@supabase/supabase-js";
+import Image from "next/image";
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
@@ -144,10 +145,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-12 min-h-screen flex flex-col items-center justify-center">
       <div className="bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-w-2xl sm:max-w-4xl w-full">
         <div className="w-full md:w-1/2 p-4 sm:p-6 flex items-center justify-center bg-gray-100">
-          <img
+          <Image
             src={product.image}
             alt={product.name}
             className="max-h-60 sm:max-h-96 object-contain rounded-lg w-full"
+            width={400}
+            height={384}
           />
         </div>
         <div className="w-full md:w-1/2 p-4 sm:p-8 flex flex-col justify-between">

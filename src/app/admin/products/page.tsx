@@ -5,6 +5,7 @@ import { IProduct } from "@/models/Product";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -102,10 +103,12 @@ export default function AdminProductsPage() {
               {products.map((product) => (
                 <tr key={product.id}>
                   <td className="px-2 sm:px-6 py-4 whitespace-nowrap">
-                    <img
+                    <Image
                       src={product.image}
                       alt={product.name}
                       className="h-10 w-10 sm:h-12 sm:w-12 object-cover rounded-md"
+                      width={48}
+                      height={48}
                     />
                   </td>
                   <td className="px-2 sm:px-6 py-4 whitespace-nowrap font-medium text-black">
