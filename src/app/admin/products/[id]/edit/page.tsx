@@ -82,7 +82,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-black mb-8 sm:mb-12">
         Edit Product
       </h1>
-      <div className="max-w-xl sm:max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-4 sm:p-8">
+      <div className="max-w-xs sm:max-w-xl sm:max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-4 sm:p-8">
         <ProductForm
           initialData={product}
           onSubmit={handleEditProduct}

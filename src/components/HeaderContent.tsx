@@ -131,12 +131,21 @@ export default function HeaderContent() {
         <li className="relative">
           <Link
             href="/cart"
-            className="relative text-black hover:font-bold transition-colors duration-200"
+            className="relative text-black hover:font-bold transition-colors duration-200 flex items-center"
             onClick={() => setMenuOpen(false)}
+            aria-label="Cart"
           >
-            Cart
+            {/* Cart icon for desktop */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-6 h-6 text-primary"
+            >
+              <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.51 0 .955.343 1.087.836l.272 1.016 1.7 6.36a2.25 2.25 0 002.174 1.688h7.7a2.25 2.25 0 002.174-1.688l1.7-6.36a1.125 1.125 0 00-1.087-1.452H2.25zm3.75 16.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm10.5 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
+            </svg>
             {cart.length > 0 && (
-              <span className="absolute -top-3 -right-4 bg-red-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center animate-ping-short shadow-lg">
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-lg">
                 {cart.length}
               </span>
             )}
@@ -205,30 +214,47 @@ export default function HeaderContent() {
         >
           MyStore
         </Link>
-        {/* Hamburger for mobile */}
-        <button
-          className="md:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none"
-          aria-label="Toggle menu"
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span
-            className={`block w-7 h-0.5 bg-black mb-1.5 transition-all duration-300 ${
-              menuOpen ? "rotate-45 translate-y-2" : ""
-            }`}
-          ></span>
-          <span
-            className={`block w-7 h-0.5 bg-black mb-1.5 transition-all duration-300 ${
-              menuOpen ? "opacity-0" : ""
-            }`}
-          ></span>
-          <span
-            className={`block w-7 h-0.5 bg-black transition-all duration-300 ${
-              menuOpen ? "-rotate-45 -translate-y-2" : ""
-            }`}
-          ></span>
-        </button>
-        {/* Desktop nav */}
-        <ul className="hidden md:flex space-x-6 items-center">{navLinks}</ul>
+        <div className="flex items-center gap-2 md:gap-0">
+          {/* Cart icon for mobile (always visible) */}
+          <Link
+            href="/cart"
+            className="relative md:hidden mr-2"
+            aria-label="Cart"
+          >
+            {/* Better cart icon: filled style, same as desktop */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-7 h-7 text-primary"
+            >
+              <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.51 0 .955.343 1.087.836l.272 1.016 1.7 6.36a2.25 2.25 0 002.174 1.688h7.7a2.25 2.25 0 002.174-1.688l1.7-6.36a1.125 1.125 0 00-1.087-1.452H2.25zm3.75 16.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm10.5 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
+            </svg>
+            {cart.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-lg">
+                {cart.length}
+              </span>
+            )}
+          </Link>
+          {/* Hamburger for mobile */}
+          <button
+            className="md:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none"
+            aria-label="Toggle menu"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span
+              className={`block w-7 h-0.5 bg-black mb-1.5 transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`}
+            ></span>
+            <span
+              className={`block w-7 h-0.5 bg-black mb-1.5 transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`}
+            ></span>
+            <span
+              className={`block w-7 h-0.5 bg-black transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`}
+            ></span>
+          </button>
+          {/* Desktop nav */}
+          <ul className="hidden md:flex space-x-6 items-center">{navLinks}</ul>
+        </div>
       </div>
       {/* Mobile nav */}
       {menuOpen && (

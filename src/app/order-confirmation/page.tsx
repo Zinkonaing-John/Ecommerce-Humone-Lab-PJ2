@@ -12,14 +12,14 @@ export default function OrderConfirmationPage() {
         Thank you for your purchase. Your order has been successfully placed and
         is being processed.
       </p>
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto">
-        <Link href="/products" className="w-full sm:w-auto">
-          <button className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full max-w-xs sm:max-w-none mx-auto">
+        <Link href="/products">
+          <button className="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300">
             Continue Shopping
           </button>
         </Link>
-        <Link href="/profile" className="w-full sm:w-auto">
-          <button className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
+        <Link href="/profile">
+          <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
             View Orders
           </button>
         </Link>

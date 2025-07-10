@@ -49,7 +49,11 @@ export default function AdminUsersPage() {
       displayNameStr.toLowerCase().includes(search.toLowerCase()) ||
       emailStr.toLowerCase().includes(search.toLowerCase()) ||
       phoneStr.toLowerCase().includes(search.toLowerCase());
-    return matchesSearch;
+    const matchesRole = role === "All" || user.app_metadata?.provider === role;
+    // For status, since Auth users don't have a direct status, treat users with last_sign_in_at as Active, otherwise Inactive
+    const userStatus = user.last_sign_in_at ? "Active" : "Inactive";
+    const matchesStatus = status === "All" || userStatus === status;
+    return matchesSearch && matchesRole && matchesStatus;
   });
 
   const handleDelete = async (id: string) => {
@@ -61,8 +65,10 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-black">Users Management</h1>
+    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-8 min-h-screen">
+      <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 sm:mb-8 text-black">
+        Users Management
+      </h1>
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <input
           type="text"
@@ -71,28 +77,6 @@ export default function AdminUsersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <select
-          className="border rounded px-3 py-2 w-full sm:w-1/4"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-        >
-          {roleOptions.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt.charAt(0).toUpperCase() + opt.slice(1)}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border rounded px-3 py-2 w-full sm:w-1/4"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          {statusOptions.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
       </div>
       <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
         {loading ? (
@@ -100,31 +84,31 @@ export default function AdminUsersPage() {
         ) : error ? (
           <div className="p-6 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   UID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Display Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Email
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Phone
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Provider Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Created At
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Last Sign In At
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -134,7 +118,7 @@ export default function AdminUsersPage() {
                 <tr>
                   <td
                     colSpan={8}
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-2 sm:px-6 py-4 text-center text-gray-500"
                   >
                     No users found.
                   </td>
@@ -142,48 +126,42 @@ export default function AdminUsersPage() {
               ) : (
                 filteredUsers.map((user: any) => (
                   <tr key={user.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {user.id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {user.user_metadata?.full_name ||
                         user.user_metadata?.display_name ||
                         "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {user.email}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {user.phone || "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {user.app_metadata?.provider || "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {user.created_at
                         ? new Date(user.created_at).toLocaleString()
                         : "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {user.last_sign_in_at
                         ? new Date(user.last_sign_in_at).toLocaleString()
                         : "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap flex gap-2 justify-center">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap flex flex-col sm:flex-row gap-2 sm:gap-2 justify-center">
                       <button
-                        className="bg-primary text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors text-sm font-semibold"
+                        className="bg-primary text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors text-xs sm:text-sm font-semibold"
                         onClick={() => setViewUser(user)}
                       >
                         View
                       </button>
                       <button
-                        className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition-colors text-sm font-semibold"
-                        onClick={() => setEditUser(user)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors text-sm font-semibold"
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors text-xs sm:text-sm font-semibold"
                         onClick={() => setDeleteUserId(user.id)}
                       >
                         Delete

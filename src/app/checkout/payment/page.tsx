@@ -57,6 +57,7 @@ export default function PaymentPage() {
         name: item.name,
         price: item.price,
         quantity: item.quantity,
+        image: item.image, // include image
       }));
 
       const totalAmount = cart.reduce(

@@ -66,7 +66,7 @@ export default function AdminProductsPage() {
 
       <div className="flex justify-end mb-6 sm:mb-8">
         <Link href="/admin/products/new">
-          <button className="bg-primary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 text-sm sm:text-base">
+          <button className="bg-primary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 text-xs sm:text-base">
             Add New Product
           </button>
         </Link>
@@ -117,16 +117,22 @@ export default function AdminProductsPage() {
                   <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                     ${product.price.toFixed(2)}
                   </td>
-                  <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-right font-medium flex flex-col sm:flex-row gap-2 sm:gap-4">
+                  <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-right font-medium flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
                     <Link
                       href={`/admin/products/${product.id}/edit`}
-                      className="text-primary hover:text-blue-900"
+                      className="w-full sm:w-auto"
                     >
-                      Edit
+                      <button
+                        className="w-full sm:w-auto bg-primary text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-blue-700 transition-colors duration-200 text-xs sm:text-base"
+                        type="button"
+                      >
+                        Edit
+                      </button>
                     </Link>
                     <button
                       onClick={() => handleDelete(product.id)}
-                      className="text-red-600 hover:text-red-900"
+                      className="w-full sm:w-auto bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-red-700 transition-colors duration-200 text-xs sm:text-base"
+                      type="button"
                     >
                       Delete
                     </button>

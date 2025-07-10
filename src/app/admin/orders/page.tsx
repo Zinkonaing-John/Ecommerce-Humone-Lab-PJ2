@@ -3,7 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/db";
 
-const statusOptions = ["All", "Pending", "Shipped", "Delivered", "Cancelled"];
+const statusOptions = [
+  { value: "pending", label: "Pending" },
+  { value: "order_received", label: "Order Received" },
+  { value: "order_shipped", label: "Order Shipped" },
+  { value: "cancelled", label: "Cancelled" },
+];
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -15,6 +20,11 @@ export default function AdminOrdersPage() {
   const [editOrder, setEditOrder] = useState<any | null>(null);
   const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  // 1. Add local state to track edited status for each order
+  const [editedStatuses, setEditedStatuses] = useState<Record<string, string>>(
+    {}
+  );
+  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -41,7 +51,8 @@ export default function AdminOrdersPage() {
     const matchesSearch =
       idStr.toLowerCase().includes(search.toLowerCase()) ||
       userIdStr.toLowerCase().includes(search.toLowerCase());
-    return matchesSearch;
+    const matchesStatus = status === "All" || order.status === status;
+    return matchesSearch && matchesStatus;
   });
 
   const handleDelete = async (id: string) => {
@@ -52,9 +63,42 @@ export default function AdminOrdersPage() {
     setDeleteOrderId(null);
   };
 
+  // 2. Update handleStatusChange to only update local state
+  const handleStatusChange = (orderId: number, newStatus: string) => {
+    setEditedStatuses((prev) => ({ ...prev, [orderId]: newStatus }));
+  };
+
+  // 3. Add a function to update the status in the database
+  const handleUpdateStatus = async (orderId: number) => {
+    setUpdatingOrderId(orderId.toString());
+    const newStatus = editedStatuses[orderId];
+    const { error } = await supabase
+      .from("orders")
+      .update({ status: newStatus })
+      .eq("id", orderId);
+    if (error) {
+      alert("Failed to update status.");
+    } else {
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
+      // Optionally, trigger a refresh in the user's profile (if using a shared context or event log)
+    }
+    setUpdatingOrderId(null);
+    setEditedStatuses((prev) => {
+      const copy = { ...prev };
+      delete copy[orderId];
+      return copy;
+    });
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-black">Orders Management</h1>
+    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-8 min-h-screen">
+      <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 sm:mb-8 text-black">
+        Orders Management
+      </h1>
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <input
           type="text"
@@ -68,9 +112,10 @@ export default function AdminOrdersPage() {
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
+          <option value="All">All</option>
           {statusOptions.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
             </option>
           ))}
         </select>
@@ -81,28 +126,28 @@ export default function AdminOrdersPage() {
         ) : error ? (
           <div className="p-6 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Order ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   User ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Total Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Items
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Created At
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -112,7 +157,7 @@ export default function AdminOrdersPage() {
                 <tr>
                   <td
                     colSpan={7}
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-2 sm:px-6 py-4 text-center text-gray-500"
                   >
                     No orders found.
                   </td>
@@ -120,30 +165,26 @@ export default function AdminOrdersPage() {
               ) : (
                 filteredOrders.map((order) => (
                   <tr key={order.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {order.id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {order.user_id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       ${order.total_amount?.toFixed(2) ?? "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {Array.isArray(order.items) ? order.items.length : 0}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {order.created_at
                         ? new Date(order.created_at).toLocaleString()
                         : "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-black">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       <span
-                        className={`text-xs font-semibold px-2 py-1 rounded ${
-                          order.status === "cancelled"
-                            ? "bg-red-100 text-red-600"
-                            : "bg-green-100 text-green-700"
-                        }`}
+                        className={`text-xs font-semibold px-2 py-1 rounded ${order.status === "cancelled" ? "bg-red-100 text-red-600" : "bg-green-100 text-green-700"}`}
                       >
                         {order.status
                           ? order.status.charAt(0).toUpperCase() +
@@ -151,21 +192,45 @@ export default function AdminOrdersPage() {
                           : "Pending"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap flex gap-2 justify-center">
+                    <td className="px-2 sm:px-6 py-4 whitespace-nowrap flex flex-col sm:flex-row gap-2 sm:gap-2 justify-center">
                       <button
-                        className="bg-primary text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors text-sm font-semibold"
+                        className="bg-primary text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors text-xs sm:text-sm font-semibold"
                         onClick={() => setViewOrder(order)}
                       >
                         View
                       </button>
-                      <button
-                        className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition-colors text-sm font-semibold"
-                        onClick={() => setEditOrder(order)}
+                      <select
+                        className="border rounded px-2 py-1 text-xs sm:text-sm font-semibold bg-white"
+                        value={
+                          editedStatuses[order.id] ??
+                          (order.status || "pending")
+                        }
+                        onChange={(e) =>
+                          handleStatusChange(order.id, e.target.value)
+                        }
                       >
-                        Edit
+                        {statusOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        className="bg-primary text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors text-xs sm:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={
+                          !editedStatuses[order.id] ||
+                          editedStatuses[order.id] === order.status ||
+                          updatingOrderId === order.id.toString()
+                        }
+                        onClick={() => handleUpdateStatus(order.id)}
+                        type="button"
+                      >
+                        {updatingOrderId === order.id.toString()
+                          ? "Updating..."
+                          : "Update"}
                       </button>
                       <button
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors text-sm font-semibold"
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors text-xs sm:text-sm font-semibold"
                         onClick={() => setDeleteOrderId(order.id)}
                       >
                         Delete
@@ -181,7 +246,7 @@ export default function AdminOrdersPage() {
       {/* View Modal */}
       {viewOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+          <div className="bg-white rounded-xl p-6 w-full max-w-xs sm:max-w-md shadow-lg overflow-y-auto max-h-[90vh]">
             <h2 className="text-xl font-bold mb-4">Order Details</h2>
             <div className="mb-4 space-y-2">
               <div>
@@ -196,10 +261,6 @@ export default function AdminOrdersPage() {
                 {viewOrder.total_amount?.toFixed(2) ?? "-"}
               </div>
               <div>
-                <span className="font-semibold">Items:</span>{" "}
-                {Array.isArray(viewOrder.items) ? viewOrder.items.length : 0}
-              </div>
-              <div>
                 <span className="font-semibold">Created At:</span>{" "}
                 {viewOrder.created_at
                   ? new Date(viewOrder.created_at).toLocaleString()
@@ -208,11 +269,7 @@ export default function AdminOrdersPage() {
               <div>
                 <span className="font-semibold">Status:</span>{" "}
                 <span
-                  className={`text-xs font-semibold px-2 py-1 rounded ${
-                    viewOrder.status === "cancelled"
-                      ? "bg-red-100 text-red-600"
-                      : "bg-green-100 text-green-700"
-                  }`}
+                  className={`text-xs font-semibold px-2 py-1 rounded ${viewOrder.status === "cancelled" ? "bg-red-100 text-red-600" : "bg-green-100 text-green-700"}`}
                 >
                   {viewOrder.status
                     ? viewOrder.status.charAt(0).toUpperCase() +
@@ -220,9 +277,48 @@ export default function AdminOrdersPage() {
                     : "Pending"}
                 </span>
               </div>
+              <div>
+                <span className="font-semibold">Items:</span>
+                {Array.isArray(viewOrder.items) &&
+                viewOrder.items.length > 0 ? (
+                  <ul className="mt-2 space-y-2">
+                    {viewOrder.items.map((item: any, idx: number) => (
+                      <li key={idx} className="border rounded p-2 bg-gray-50">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+                          {item.image && (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="h-12 w-12 object-cover rounded-md mb-2 sm:mb-0"
+                            />
+                          )}
+                          <div>
+                            <span className="block text-sm font-semibold text-black">
+                              {item.name}
+                            </span>
+                            <span className="block text-xs text-gray-600">
+                              Category: {item.category}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mt-1">
+                          <span className="block text-xs text-gray-700">
+                            Quantity: {item.quantity}
+                          </span>
+                          <span className="block text-xs text-gray-700">
+                            Price: ${item.price?.toFixed(2) ?? "-"}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <span className="ml-2 text-gray-500">No items</span>
+                )}
+              </div>
             </div>
             <button
-              className="bg-primary text-white px-4 py-2 rounded"
+              className="w-full bg-primary text-white px-4 py-2 rounded mt-4 hover:bg-blue-700 transition-colors"
               onClick={() => setViewOrder(null)}
             >
               Close
