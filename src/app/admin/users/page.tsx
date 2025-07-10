@@ -3,18 +3,30 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/db";
 
-const roleOptions = ["All", "user", "admin"];
-const statusOptions = ["All", "Active", "Inactive"];
+interface UserMeta {
+  full_name?: string;
+  display_name?: string;
+}
+interface AppMeta {
+  provider?: string;
+}
+interface UserType {
+  id: string;
+  user_metadata?: UserMeta;
+  app_metadata?: AppMeta;
+  email?: string;
+  phone?: string;
+  created_at?: string;
+  last_sign_in_at?: string;
+}
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
   const [search, setSearch] = useState("");
-  const [role, setRole] = useState("All");
-  const [status, setStatus] = useState("All");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [viewUser, setViewUser] = useState<any | null>(null);
-  const [editUser, setEditUser] = useState<any | null>(null);
+  const [viewUser, setViewUser] = useState<UserType | null>(null);
+  const [editUser, setEditUser] = useState<UserType | null>(null);
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -38,7 +50,7 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, []);
 
-  const filteredUsers = users.filter((user: any) => {
+  const filteredUsers = users.filter((user: UserType) => {
     const idStr = user.id ? String(user.id) : "";
     const displayNameStr =
       user.user_metadata?.full_name || user.user_metadata?.display_name || "";
@@ -49,10 +61,10 @@ export default function AdminUsersPage() {
       displayNameStr.toLowerCase().includes(search.toLowerCase()) ||
       emailStr.toLowerCase().includes(search.toLowerCase()) ||
       phoneStr.toLowerCase().includes(search.toLowerCase());
-    const matchesRole = role === "All" || user.app_metadata?.provider === role;
+    const matchesRole = true; // No direct role filtering in Auth users
     // For status, since Auth users don't have a direct status, treat users with last_sign_in_at as Active, otherwise Inactive
     const userStatus = user.last_sign_in_at ? "Active" : "Inactive";
-    const matchesStatus = status === "All" || userStatus === status;
+    const matchesStatus = true; // No direct status filtering in Auth users
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -124,7 +136,7 @@ export default function AdminUsersPage() {
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((user: any) => (
+                filteredUsers.map((user: UserType) => (
                   <tr key={user.id}>
                     <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-black">
                       {user.id}

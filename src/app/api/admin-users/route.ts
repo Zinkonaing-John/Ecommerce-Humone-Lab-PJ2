@@ -6,7 +6,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY! // Service key, only on server!
 );
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const { data, error } = await supabase.auth.admin.listUsers();
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {

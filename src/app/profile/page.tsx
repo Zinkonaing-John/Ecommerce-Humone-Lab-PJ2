@@ -97,7 +97,7 @@ export default function ProfilePage() {
         .eq("user_id", currentUser.id)
         .order("created_at", { ascending: false });
       setOrders(fetchedOrders as Order[]);
-    } catch (err) {
+    } catch {
       alert("Failed to cancel order. Please try again.");
     }
     setCancellingOrderId(null);

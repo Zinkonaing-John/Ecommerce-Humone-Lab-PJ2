@@ -10,14 +10,31 @@ const statusOptions = [
   { value: "cancelled", label: "Cancelled" },
 ];
 
+interface OrderItem {
+  product_id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  image?: string;
+  category?: string;
+}
+interface Order {
+  id: number;
+  user_id: string;
+  total_amount: number;
+  items: OrderItem[];
+  created_at: string;
+  status?: string;
+}
+
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [viewOrder, setViewOrder] = useState<any | null>(null);
-  const [editOrder, setEditOrder] = useState<any | null>(null);
+  const [viewOrder, setViewOrder] = useState<Order | null>(null);
+  const [editOrder, setEditOrder] = useState<Order | null>(null);
   const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   // 1. Add local state to track edited status for each order
@@ -282,7 +299,7 @@ export default function AdminOrdersPage() {
                 {Array.isArray(viewOrder.items) &&
                 viewOrder.items.length > 0 ? (
                   <ul className="mt-2 space-y-2">
-                    {viewOrder.items.map((item: any, idx: number) => (
+                    {viewOrder.items.map((item: OrderItem, idx: number) => (
                       <li key={idx} className="border rounded p-2 bg-gray-50">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
                           {item.image && (

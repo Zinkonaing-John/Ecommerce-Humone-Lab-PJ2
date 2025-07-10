@@ -15,60 +15,43 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { addMonths, format, isAfter, isBefore, parseISO } from "date-fns";
+import { addMonths, format } from "date-fns";
 
-const sampleStats = {
-  totalOrders: 128,
-  totalUsers: 54,
-  totalRevenue: 10234.5,
-};
-
-const recentActivity = [
-  {
-    id: 1,
-    type: "Order",
-    message: "Order ORD128 placed by Alice Smith.",
-    time: "2 min ago",
-  },
-  {
-    id: 2,
-    type: "User",
-    message: "New user registered: Bob Johnson.",
-    time: "10 min ago",
-  },
-  {
-    id: 3,
-    type: "Order",
-    message: "Order ORD127 marked as shipped.",
-    time: "30 min ago",
-  },
-  {
-    id: 4,
-    type: "Order",
-    message: "Order ORD126 cancelled by user.",
-    time: "1 hr ago",
-  },
-];
+interface OrderEvent {
+  order_id: number;
+  event_type: string;
+  event_message: string;
+  created_at: string;
+}
+interface MonthCount {
+  month: string;
+  count: number;
+}
+interface MonthRevenue {
+  month: string;
+  revenue: number;
+}
+interface TopProduct {
+  name: string;
+  quantity: number;
+  category: string;
+}
+interface OrderStatus {
+  status: string;
+  count: number;
+}
 
 export default function AdminDashboardPage() {
-  const [orderEvents, setOrderEvents] = useState<any[]>([]);
+  const [orderEvents, setOrderEvents] = useState<OrderEvent[]>([]);
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalUsers: 0,
     totalRevenue: 0,
   });
-  const [ordersByMonth, setOrdersByMonth] = useState<
-    { month: string; count: number }[]
-  >([]);
-  const [revenueByMonth, setRevenueByMonth] = useState<
-    { month: string; revenue: number }[]
-  >([]);
-  const [topProducts, setTopProducts] = useState<
-    { name: string; quantity: number; category: string }[]
-  >([]);
-  const [orderStatusData, setOrderStatusData] = useState<
-    { status: string; count: number }[]
-  >([]);
+  const [ordersByMonth, setOrdersByMonth] = useState<MonthCount[]>([]);
+  const [revenueByMonth, setRevenueByMonth] = useState<MonthRevenue[]>([]);
+  const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
+  const [orderStatusData, setOrderStatusData] = useState<OrderStatus[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
     start: format(addMonths(new Date(), -5), "yyyy-MM-01"),
@@ -375,32 +358,6 @@ export default function AdminDashboardPage() {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
-      {/* Recent Activity */}
-      <div className="bg-white rounded-xl shadow-lg p-4 mb-6 overflow-x-auto">
-        <h2 className="text-lg font-bold mb-2 text-black">Recent Activity</h2>
-        <ul className="divide-y divide-gray-200">
-          {orderEvents.length === 0 ? (
-            <li className="py-3 text-gray-500">No recent order events.</li>
-          ) : (
-            orderEvents.map((event) => (
-              <li
-                key={event.created_at + event.order_id}
-                className="py-3 flex items-center justify-between"
-              >
-                <div>
-                  <span className="font-semibold text-primary mr-2">
-                    [{event.event_type}]
-                  </span>
-                  <span className="text-black">{event.event_message}</span>
-                </div>
-                <span className="text-gray-500 text-sm">
-                  {new Date(event.created_at).toLocaleString()}
-                </span>
-              </li>
-            ))
-          )}
-        </ul>
       </div>
     </div>
   );
